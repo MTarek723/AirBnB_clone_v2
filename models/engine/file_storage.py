@@ -8,30 +8,14 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-
-def all(self, cls=None):
-    """
-    Returns a dictionary of all objects or objects of a specific class.
-    If cls is provided, it returns only objects of that class.
-    """
-    if cls is None:
-        return FileStorage.__objects
-
-    filtered_objects = {}
-    for key, value in FileStorage.__objects.items():
-        if isinstance(value, cls):
-            filtered_objects[key] = value
-
-    return filtered_objects
+    def all(self, cls=None):
+        if cls is None:
+            return self.__objects
+        return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
-
-    def delete(self, obj=None):
-        if (obj):
-            x = FileStorage.__objects
-            x.pop(obj.to_dict()['__class__'] + '.' + obj.id)
 
     def save(self):
         """Saves storage dictionary to file"""
@@ -65,3 +49,13 @@ def all(self, cls=None):
                     self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def delete(self, obj=None):
+        """
+        Deletes an object from __objects if it exists.
+        If obj is None, the method does nothing.
+        """
+        if obj is not None:
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
+            if key in self.__objects:
+                del self.__objects[key]
