@@ -50,10 +50,12 @@ def do_deploy(archive_path):
         return True
 
     return False
+
+
 def deploy():
     """Create and distributes an archive to web servers"""
     try:
         path = do_pack()
         return do_deploy(path)
-    except:
+    except Exception:
         return False
